@@ -55,10 +55,11 @@ export default {
 					],
 					plugins: [
 						'transform-runtime',
-						["antd", {
+						'transform-decorators-legacy',
+						['antd', {
 							style: 'css'
 						}],
-						...DEBUG ? [] : [
+						...DEBUG ? ['react-hot-loader/babel'] : [
 							'transform-react-remove-prop-types',
 							'transform-react-constant-elements',
 							'transform-react-inline-elements'
@@ -87,7 +88,7 @@ export default {
 			{
 				test: /\.css$/,
 				loaders: [
-					'isomorphic-style-loader',
+					'style-loader',
 					`css-loader?${JSON.stringify({
 						sourceMap: DEBUG,
 						

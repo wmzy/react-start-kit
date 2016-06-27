@@ -5,5 +5,6 @@
 
 
 import React from 'react'
+import {DatePicker} from 'antd';
 
-export default () => <h1>hello world !</h1>;
+export default () => <DatePicker />;

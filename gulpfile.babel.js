@@ -25,6 +25,7 @@ gulp.task('bundle', function () {
 gulp.task('dev-server', function (callback) {
 	// Start a webpack-dev-server
 	webpackConfig.entry = [
+		'react-hot-loader/patch',
 		'webpack-dev-server/client?http://localhost:3000/',
 		'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
 		webpackConfig.entry];
