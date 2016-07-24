@@ -2,7 +2,17 @@
  * Created by wmzy on 16-6-15.
  */
 
+import React from 'react';
 import {render} from 'react-dom'
-import Router from './routes';
+import {Router, Route, Link, browserHistory} from 'react-router'
+import routes from './routes';
 
-render(Router, document.getElementById('app'));
+render(<Router routes={routes}/>, document.getElementById('app'));
+
+if (module.hot) {
+	module.hot.accept('./routes', () => {
+		const routes = require('./routes').default;
+
+		render(<Router routes={routes}/>, document.getElementById('app'));
+	});
+}

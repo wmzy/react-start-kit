@@ -6,20 +6,15 @@
 
 import React from 'react'
 import {Router, Route, Link, browserHistory} from 'react-router'
-import App from '../components/app';
+import App from '../pages/App';
+import home from './home';
+import about from './about';
 
-export default (
-	<Router history={browserHistory}>
-		<Route path="/(index.html)" component={App}>
-			{
-				/*
-				 <Route path="about" component={About}/>
-				 <Route path="users" component={Users}>
-				 <Route path="/user/:userId" component={User}/>
-				 </Route>
-				 <Route path="*" component={NoMatch}/>
-				 */
-			}
-		</Route>
-	</Router>
-);
+export default {
+	path: '/',
+	component: App,
+	indexRoute: home,
+	childRoutes: [
+		about
+	]
+};
