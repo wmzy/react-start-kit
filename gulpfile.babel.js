@@ -1,13 +1,11 @@
 'use strict';
 
 import 'babel-polyfill';
-import path from 'path';
 import gulp from 'gulp';
 import gUtil from 'gulp-util';
 import del from 'del';
 import runSequence from 'run-sequence';
 import browserSync from 'browser-sync';
-import webpackStream from 'webpack-stream';
 import webpack from 'webpack';
 import webpackConfig from './webpack.config.js';
 import gulpLoadPlugins from 'gulp-load-plugins';
@@ -17,41 +15,27 @@ const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
 
 gulp.task('bundle', function () {
-	return gulp.src('src/client.js')
-		.pipe(webpackStream(webpackConfig))
-		.pipe(gulp.dest('build/assets/'));
+  const compiler = webpack(webpackConfig);
+  compiler.run((err, stats) => {
+    if (err) gUtil.log(err);
+    console.log(stats);
+  })
 });
 
 gulp.task('dev-server', function (callback) {
-	// Start a webpack-dev-server
-	webpackConfig.entry = [
-		'react-hot-loader/patch',
-		'webpack-dev-server/client?http://localhost:3000/',
-		'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
-		webpackConfig.entry];
-
-	webpackConfig.plugins.unshift(
-		new webpack.HotModuleReplacementPlugin()
-	);
-
 	const compiler = webpack(webpackConfig);
 
-	new WebpackDevServer(compiler, {
-		contentBase: path.resolve(__dirname, 'build'),
-		hot: true
-		// server and middleware options
-	}).listen(3000, 'localhost', function (err) {
+	new WebpackDevServer(compiler, webpackConfig.devServer).listen(webpackConfig.devServer.port, function (err) {
 		if (err) throw new gUtil.PluginError('webpack-dev-server', err);
 		// Server listening
-		gUtil.log('[webpack-dev-server]', 'http://localhost:3000');
+		gUtil.log('[webpack-dev-server]', `http://localhost:${webpackConfig.devServer.port}`);
 
 		// keep the server alive or continue?
 		// callback();
 	});
 });
 
-gulp.task('dev', ['bundle', 'dev-server'], () => {
-	gulp.watch('src/**', ['bundle']);
+gulp.task('dev', ['dev-server'], () => {
 });
 
 // Lint JavaScript

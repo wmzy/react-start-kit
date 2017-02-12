@@ -11,8 +11,6 @@ render(<Router routes={routes}/>, document.getElementById('app'));
 
 if (module.hot) {
 	module.hot.accept('./routes', () => {
-		const routes = require('./routes').default;
-
 		render(<Router routes={routes}/>, document.getElementById('app'));
 	});
 }
