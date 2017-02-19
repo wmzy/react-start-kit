@@ -7,10 +7,10 @@ import {render} from 'react-dom'
 import {Router, Route, Link, browserHistory} from 'react-router'
 import routes from './routes';
 
-render(<Router routes={routes}/>, document.getElementById('app'));
+render(<Router history={browserHistory} routes={routes}/>, document.getElementById('app'));
 
 if (module.hot) {
 	module.hot.accept('./routes', () => {
-		render(<Router routes={routes}/>, document.getElementById('app'));
+		render(<Router history={browserHistory} routes={routes}/>, document.getElementById('app'));
 	});
 }

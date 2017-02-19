@@ -50,7 +50,11 @@ export default {
               'stage-0'
             ],
             plugins: [
-              'transform-runtime',
+              ['transform-runtime', {
+                helpers: false,
+                polyfill: false,
+                regenerator: true,
+              }],
               'transform-decorators-legacy',
               ['import', {
                 style: 'css',
