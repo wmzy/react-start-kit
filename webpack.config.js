@@ -50,6 +50,7 @@ export default {
               'stage-0'
             ],
             plugins: [
+              'syntax-dynamic-import',
               ['transform-runtime', {
                 helpers: false,
                 polyfill: false,
