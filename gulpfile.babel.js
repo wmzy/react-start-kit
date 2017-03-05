@@ -23,12 +23,19 @@ gulp.task('bundle', function () {
 });
 
 gulp.task('dev-server', function (callback) {
+  const {port} = webpackConfig.devServer;
+  webpackConfig.entry = [
+    'react-hot-loader/patch',
+    `webpack-dev-server/client?http://localhost:${port}`,
+    'webpack/hot/only-dev-server',
+    webpackConfig.entry
+  ];
 	const compiler = webpack(webpackConfig);
 
-	new WebpackDevServer(compiler, webpackConfig.devServer).listen(webpackConfig.devServer.port, function (err) {
+	new WebpackDevServer(compiler, webpackConfig.devServer).listen(port, function (err) {
 		if (err) throw new gUtil.PluginError('webpack-dev-server', err);
 		// Server listening
-		gUtil.log('[webpack-dev-server]', `http://localhost:${webpackConfig.devServer.port}`);
+		gUtil.log('[webpack-dev-server]', `http://localhost:${port}`);
 
 		// keep the server alive or continue?
 		// callback();

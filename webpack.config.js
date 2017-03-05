@@ -36,6 +36,7 @@ export default {
     rules: [
       {
         test: /\.jsx?$/,
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -51,6 +52,7 @@ export default {
             ],
             plugins: [
               'syntax-dynamic-import',
+              'react-hot-loader/babel',
               ['transform-runtime', {
                 helpers: false,
                 polyfill: false,
