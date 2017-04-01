@@ -4,15 +4,14 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 const DEBUG = !process.argv.includes('--release');
 const VERBOSE = process.argv.includes('--verbose');
-const AUTOPREFIXER_BROWSERS = [
-  'Android 2.3',
+const BROWSER_LIST = [
   'Android >= 4',
-  'Chrome >= 35',
-  'Firefox >= 31',
-  'Explorer >= 9',
-  'iOS >= 7',
-  'Opera >= 12',
-  'Safari >= 7.1'
+  'Chrome >= 52',
+  'Firefox >= 45',
+  'Explorer >= 11',
+  'last 2 Edge versions',
+  'iOS >= 9',
+  'Safari >= 10'
 ];
 const GLOBALS = {
   __DEV__: DEBUG
@@ -46,19 +45,25 @@ export default {
             // https://babeljs.io/docs/usage/options/
             babelrc: false,
             presets: [
-              'react',
-              ['es2015', {modules: false}],
-              'stage-0'
+              ['env', {
+                debug: VERBOSE,
+                node: 'current',
+                useBuiltIns: true,
+                targets: {
+                  browsers: BROWSER_LIST
+                },
+                modules: false
+              }],
+              'react'
             ],
             plugins: [
-              'syntax-dynamic-import',
               'react-hot-loader/babel',
-              ['transform-runtime', {
-                helpers: false,
-                polyfill: false,
-                regenerator: true,
-              }],
               'transform-decorators-legacy',
+              'transform-do-expressions',
+              'transform-export-extensions',
+              'syntax-dynamic-import',
+              'transform-class-properties',
+              'transform-object-rest-spread',
               ['import', {
                 style: 'css',
                 libraryName: 'antd'
@@ -75,27 +80,29 @@ export default {
       {
         test: /\.scss$/,
         use: [
-          //'isomorphic-style-loader',
           'style-loader',
-          `css-loader?${JSON.stringify({
-            sourceMap: DEBUG,
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: DEBUG,
 
-            // CSS Modules https://github.com/css-modules/css-modules
-            modules: true,
-            localIdentName: DEBUG ? '[name]_[local]_[hash:base64:3]' : '[hash:base64:4]',
+              // CSS Modules https://github.com/css-modules/css-modules
+              modules: true,
+              localIdentName: DEBUG ? '[name]_[local]_[hash:base64:3]' : '[hash:base64:4]',
 
-            // CSS Nano http://cssnano.co/options/
-            minimize: !DEBUG
-          })}`,
+              // CSS Nano http://cssnano.co/options/
+              minimize: !DEBUG
+            }
+          },
           {
             loader: 'postcss-loader',
             options: {
               parser: 'postcss-scss',
-              plugins: function (bundler) {
+              plugins: function () {
                 return [
-                  require('postcss-import')({addDependencyTo: bundler}),
+                  require('postcss-import')(),
                   require('precss')(),
-                  require('autoprefixer')({browsers: AUTOPREFIXER_BROWSERS})
+                  require('autoprefixer')({browsers: BROWSER_LIST})
                 ];
               }
             }
@@ -106,16 +113,19 @@ export default {
         test: /\.css$/,
         use: [
           'style-loader',
-          `css-loader?${JSON.stringify({
-            sourceMap: DEBUG,
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: DEBUG,
 
-            // CSS Modules https://github.com/css-modules/css-modules
-            modules: true,
-            localIdentName: '[local]',
+              // CSS Modules https://github.com/css-modules/css-modules
+              modules: true,
+              localIdentName: '[local]',
 
-            // CSS Nano http://cssnano.co/options/
-            minimize: !DEBUG
-          })}`
+              // CSS Nano http://cssnano.co/options/
+              minimize: !DEBUG
+            }
+          }
         ]
       },
       {
@@ -188,13 +198,10 @@ export default {
 
     ...DEBUG ? [] : [
 
-        // Search for equal or similar files and deduplicate them in the output
-        // https://webpack.github.io/docs/list-of-plugins.html#dedupeplugin
-        new webpack.optimize.DedupePlugin(),
-
         // Minimize all JavaScript output of chunks
         // https://github.com/mishoo/UglifyJS2#compressor-options
         new webpack.optimize.UglifyJsPlugin({
+          sourceMap: true,
           compress: {
             screw_ie8: true, // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
             warnings: VERBOSE
@@ -213,7 +220,7 @@ export default {
     })
   ],
 
-  devtool: 'cheap-eval-source-map',
+  devtool: DEBUG ? 'cheap-module-eval-source-map' : false,
 
   devServer: {
     publicPath: '/assets/',
